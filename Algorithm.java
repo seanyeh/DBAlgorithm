@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Algorithm{
@@ -9,6 +10,7 @@ public class Algorithm{
 
     private Double[] currentSels;
 
+    // Read in the query file and store in selectivityArr
     private ArrayList<Double[]> parseQueryFile(String queryFile)
         throws java.io.FileNotFoundException 
     {
@@ -36,13 +38,13 @@ public class Algorithm{
     {
         selectivityArr = parseQueryFile(queryFile);
 
-        // 
+        // Use configFile values instead of Cost class hack
     }
 
 
     // Creates all combinations
     // Returns an AL of items,
-    //  each of which is an AL of indexes - >  selectivities (double)
+    //  each of which is an AL of indexes which point to selectivities (double)
     //  (The indexes are Integers)
     private ArrayList<ArrayList<Integer>> generateAllCombinations(int n){
         ArrayList<ArrayList<Integer>> result = new ArrayList<ArrayList<Integer>>(n);
@@ -66,16 +68,20 @@ public class Algorithm{
                 
             }
 
-            System.out.println("DEBUG");
-            for (Integer d2: combination){
-                System.out.println(d2);
-            }
+            /* System.out.println("DEBUG"); */
+            /* for (Integer d2: combination){ */
+            /*     System.out.println(d2); */
+            /* } */
 
             result.add(combination);
         }
         return result;
     }
 
+    /**
+     * Returns combined selectivity given an AL of indexes (to selectivities in
+     * currentSels)
+     */
     private double getCombinedSelectivity(ArrayList<Integer> indexes){
         double p = 1;
         for (Integer i: indexes){
@@ -106,6 +112,7 @@ public class Algorithm{
             // Record(n,p,b,l,r)
             A[i] = new Record(indexes.size(),p,isNoBranch,null,null);
 
+            A[i].content = i+1;
             System.out.println(A[i]);
         }
     }
@@ -145,7 +152,11 @@ public class Algorithm{
 
         initializeRecords(A, combinations);
 
-
+        Arrays.sort(A);
+        System.out.println("SORTED!");
+        for (Record r: A){
+            System.out.println(r);
+        }
     }
 
     public static void main(String[] args){
