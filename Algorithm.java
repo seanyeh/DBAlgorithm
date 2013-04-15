@@ -139,10 +139,17 @@ public class Algorithm{
         return k*Cost.r + (k-1)*Cost.l + k*Cost.f + Cost.m*q + p*Cost.a;
     }
 
+    // Helper function to determine if two sets don't intersect
+    //  Sets are represetned as ints
+    private boolean isDisjoint(int a, int b){
+        // when a bitwise-OR b == a+B
+        return (a^b) == a+b;
+    }
+
     public void run(){
 
         // just get second scenario for now for testing
-        currentSels = selectivityArr.get(2);
+        currentSels = selectivityArr.get(1);
         int k = currentSels.length;
 
         
@@ -160,6 +167,23 @@ public class Algorithm{
         for (Record r: A){
             System.out.println(r);
         }
+
+
+        // Step 2
+
+        // outer loop: s = s1 = R child
+        for (int i=0;i<A.length;i++){
+            // inner loop: s' = s2 = L child
+            for (int j=0;j<A.length;j++){
+                int s1 = A[i].content;
+                int s2 = A[j].content;
+                if (isDisjoint(s1,s2)){
+                    System.out.println(s1+" and "+s2+ " disjoint");
+                }
+            }
+        }
+
+
     }
 
     public static void main(String[] args){
