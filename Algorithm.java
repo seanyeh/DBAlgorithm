@@ -165,7 +165,7 @@ public class Algorithm{
     public static void main(String[] args){
         try{
 
-            Algorithm a = new Algorithm("sample_query.txt","");
+            Algorithm a = new Algorithm(args[0], args[1]);
             a.run();
 
         } catch (Exception e){
