@@ -190,6 +190,25 @@ public class Algorithm{
                 int s2 = A[j].content;
                 if (isDisjoint(s1,s2)){
                     System.out.println(s1+" and "+s2+ " disjoint");
+
+                    //If they're disjoint, we need to check their c and d-metrics against each other- note we probably should check these conditionals and make sure they're right
+                    if(A[j].cmetric > A[i].cmetric) {
+                        if(!(A[j].selectivity <= 0.5 && A[i].cost < A[j].cost)) {
+                            //Calculate combined-plan cost from equation 1
+                            double fcostE = A[j].cost; //fcost(E)
+                            //Calculate m here- the cost of a branch misprediction
+                            double m = 0.0;
+                            //Calculate q here, min(1-selectivity of S', selectivity of S')
+                            double q = Math.min(1.0-A[j].selectivity, A[j].selectivity);
+                            //Calculate p*C here, where p is selectivity of S', C is the cost of S)
+                            double pc = A[j].selectivity * A[i].cost;
+                            double combinedCost = fcostE + m + q + pc;
+
+                            //Update A[s' union s] here
+
+
+                        }
+                    }
                 }
             }
         }

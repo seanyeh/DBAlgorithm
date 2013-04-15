@@ -1,7 +1,7 @@
 public class Record implements Comparable{
 
     private int num;
-    private double selectivity;
+    public double selectivity;
     
     // isNoBranch, left, and right are public for easy access/modification
     public boolean isNoBranch;
@@ -11,6 +11,10 @@ public class Record implements Comparable{
     // An int that, when converted to binary and read backwards, acts as a
     // bitmap that shows which selectivities are used.
     public int content;
+
+    // The c-metric needs to be calculated and stored when the Record is constructed, as we can calculate it from cost and selectivity alone.
+    // d-metric is just the cost, so we can leave it at that without adding anything new internally.
+    public double cmetric;
 
     // L and R should not be Records...figure this out later
     /* public Record(int n, double p, boolean b, double c, Record l, Record r){ */
@@ -25,6 +29,7 @@ public class Record implements Comparable{
         left = l;
         right = r;
 
+        cmetric = (p-1.0)/cost;
 
         // default 0
         content = 0;
@@ -34,7 +39,7 @@ public class Record implements Comparable{
     public String toString(){
         return "Record: n = " + num + " p = " + selectivity +
             " b = " + isNoBranch + " content = " + content +
-            " cost = " + cost;
+            " cost = " + cost + " c-metric = " + cmetric;
     }
 
     // For sorting in increasing order: sorted by num (number of
