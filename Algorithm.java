@@ -157,6 +157,16 @@ public class Algorithm{
         return (a^b) == a+b;
     }
 
+    // Return the index of A[] of the item that has content n
+    private int findIndexWithContent(Record[] A, int n){
+        for (int i=0; i<A.length; i++){
+            if (A[i].content == n){
+                return i;
+            }
+        }
+        return -1; // shouldn't happen
+    }
+
     public void run(){
 
         // just get second scenario for now for testing
@@ -189,7 +199,7 @@ public class Algorithm{
                 int s1 = A[i].content;
                 int s2 = A[j].content;
                 if (isDisjoint(s1,s2)){
-                    System.out.println(s1+" and "+s2+ " disjoint");
+                    /* System.out.println(s1+" and "+s2+ " disjoint"); */
 
                     //If they're disjoint, we need to check their c and d-metrics against each other- note we probably should check these conditionals and make sure they're right
                     if(A[j].cmetric > A[i].cmetric) {
@@ -204,8 +214,15 @@ public class Algorithm{
                             double pc = A[j].selectivity * A[i].cost;
                             double combinedCost = fcostE + m + q + pc;
 
-                            //Update A[s' union s] here
-
+                            //Update A[s' union s]
+                            int unionIndex = findIndexWithContent(A,s1+s2);
+                            if (combinedCost < A[unionIndex].cost){
+                                A[unionIndex].cost = combinedCost;
+                                A[unionIndex].left = j;
+                                A[unionIndex].right = i;
+                                /* System.out.println("Updated:" + A[unionIndex]); */
+                            }
+                            
 
                         }
                     }
