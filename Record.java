@@ -6,7 +6,7 @@ public class Record implements Comparable{
     // isNoBranch, left, and right are public for easy access/modification
     public boolean isNoBranch;
     public double cost;
-    public Record left, right;
+    public int left, right;
 
     // An int that, when converted to binary and read backwards, acts as a
     // bitmap that shows which selectivities are used.

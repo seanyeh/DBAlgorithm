@@ -105,7 +105,7 @@ public class Algorithm{
             System.out.println("nobranch: " + costNoBranch);
 
             boolean isNoBranch = false;
-            int cost = costLogicalAnd;
+            double cost = costLogicalAnd;
             if (costNoBranch < costLogicalAnd){
                 cost = costNoBranch;
                 isNoBranch = true;
@@ -113,7 +113,7 @@ public class Algorithm{
 
             double p = getCombinedSelectivity(indexes);
             // Record(n,p,b,c,l,r)
-            A[i] = new Record(indexes.size(),p,isNoBranch,cost,null,null);
+            A[i] = new Record(indexes.size(),p,isNoBranch,cost,-1,-1);
 
             A[i].content = i+1;
             System.out.println(A[i]);
