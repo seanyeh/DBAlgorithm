@@ -5,15 +5,19 @@ public class Record implements Comparable{
     
     // isNoBranch, left, and right are public for easy access/modification
     public boolean isNoBranch;
+    public double cost;
     public Record left, right;
 
     // An int that, when converted to binary and read backwards, acts as a
     // bitmap that shows which selectivities are used.
     public int content;
-    public Record(int n, double p, boolean b, Record l, Record r){
+
+    // L and R should not be Records...figure this out later
+    public Record(int n, double p, boolean b, double c, Record l, Record r){
         num = n;
         selectivity = p;
         isNoBranch = b;
+        cost = c;
         left = l;
         right = r;
 
