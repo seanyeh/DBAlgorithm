@@ -98,8 +98,11 @@ public class Algorithm{
         for (int i=0; i<combinations.size(); i++){
             ArrayList<Integer> indexes = combinations.get(i);
 
-            int costLogicalAnd = getCostLogicalAnd(indexes);
-            int costNoBranch = getCostNoBranch(indexes);
+            double costLogicalAnd = getCostLogicalAnd(indexes);
+            double costNoBranch = getCostNoBranch(indexes);
+
+            System.out.println("logical: " + costLogicalAnd);
+            System.out.println("nobranch: " + costNoBranch);
 
             boolean isNoBranch = false;
             int cost = costLogicalAnd;
@@ -109,8 +112,8 @@ public class Algorithm{
             }
 
             double p = getCombinedSelectivity(indexes);
-            // Record(n,p,b,l,r)
-            A[i] = new Record(indexes.size(),p,isNoBranch,null,null);
+            // Record(n,p,b,c,l,r)
+            A[i] = new Record(indexes.size(),p,isNoBranch,cost,null,null);
 
             A[i].content = i+1;
             System.out.println(A[i]);
@@ -118,13 +121,13 @@ public class Algorithm{
     }
 
     // rename and put somewhere else later
-    public int getCostNoBranch(ArrayList<Integer> indexes){
+    public double getCostNoBranch(ArrayList<Integer> indexes){
         int k = indexes.size();
 
         return k*Cost.r + (k-1)*Cost.l + k*Cost.f + Cost.a;
     }
 
-    public int getCostLogicalAnd(ArrayList<Integer> indexes){
+    public double getCostLogicalAnd(ArrayList<Integer> indexes){
         int k = indexes.size();
 
         double p = getCombinedSelectivity(indexes);
@@ -133,13 +136,13 @@ public class Algorithm{
         double q = p;
         if (p >= .5){ q = 1-p; }
 
-        return (int)(k*Cost.r + (k-1)*Cost.l + k*Cost.f + Cost.m*q + p*Cost.a);
+        return k*Cost.r + (k-1)*Cost.l + k*Cost.f + Cost.m*q + p*Cost.a;
     }
 
     public void run(){
 
         // just get second scenario for now for testing
-        currentSels = selectivityArr.get(1);
+        currentSels = selectivityArr.get(2);
         int k = currentSels.length;
 
         
