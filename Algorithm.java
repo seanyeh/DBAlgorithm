@@ -1,14 +1,16 @@
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
+import java.util.Properties;
 
 public class Algorithm{
 
     private ArrayList<Double[]> selectivityArr;
 
     private Double[] currentSels;
+
+    private Properties props;
 
     // Read in the query file and store in selectivityArr
     private ArrayList<Double[]> parseQueryFile(String queryFile)
@@ -38,7 +40,14 @@ public class Algorithm{
     {
         selectivityArr = parseQueryFile(queryFile);
 
-        // Use configFile values instead of Cost class hack
+        // Read in config file values and store in a global Java Properties object
+        props = new Properties();
+        try{
+            props.load(new FileInputStream(configFile));
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
 
@@ -122,13 +131,14 @@ public class Algorithm{
 
     // rename and put somewhere else later
     public double getCostNoBranch(ArrayList<Integer> indexes){
-        int k = indexes.size();
+        double k = (double)indexes.size();
 
-        return k*Cost.r + (k-1)*Cost.l + k*Cost.f + Cost.a;
+        //return k*Cost.r + (k-1)*Cost.l + k*Cost.f + Cost.a;
+        return k*Double.parseDouble(props.getProperty("r")) + (k-1.0)*Double.parseDouble(props.getProperty("l")) + k*Double.parseDouble(props.getProperty("f")) + Double.parseDouble(props.getProperty("a"));
     }
 
     public double getCostLogicalAnd(ArrayList<Integer> indexes){
-        int k = indexes.size();
+        double k = (double)indexes.size();
 
         double p = getCombinedSelectivity(indexes);
 
@@ -136,7 +146,8 @@ public class Algorithm{
         double q = p;
         if (p >= .5){ q = 1-p; }
 
-        return k*Cost.r + (k-1)*Cost.l + k*Cost.f + Cost.m*q + p*Cost.a;
+        //return k*Cost.r + (k-1)*Cost.l + k*Cost.f + Cost.m*q + p*Cost.a;
+        return k*Double.parseDouble(props.getProperty("r")) + (k-1.0)*Double.parseDouble(props.getProperty("l")) + k*Double.parseDouble(props.getProperty("f")) + p*Double.parseDouble(props.getProperty("a")) + q*Double.parseDouble(props.getProperty("m"));
     }
 
     public void run(){
@@ -164,8 +175,7 @@ public class Algorithm{
 
     public static void main(String[] args){
         try{
-
-            Algorithm a = new Algorithm(args[0], args[1]);
+            Algorithm a = new Algorithm(args[0], args[1]); //take in query file and config file as command-line arguments as specified in assignment
             a.run();
 
         } catch (Exception e){
