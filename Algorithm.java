@@ -110,8 +110,8 @@ public class Algorithm{
             double costLogicalAnd = getCostLogicalAnd(indexes);
             double costNoBranch = getCostNoBranch(indexes);
 
-            /* System.out.println("logical: " + costLogicalAnd); */
-            /* System.out.println("nobranch: " + costNoBranch); */
+          //   System.out.println("logical: " + costLogicalAnd); 
+          //   System.out.println("nobranch: " + costNoBranch); 
 
             boolean isNoBranch = false;
             double cost = costLogicalAnd;
@@ -125,7 +125,7 @@ public class Algorithm{
             A[i] = new Record(indexes.size(),p,isNoBranch,cost,-1,-1);
 
             A[i].content = i+1;
-            /* System.out.println(A[i]); */
+           //  System.out.println(A[i]); 
         }
     }
 
@@ -147,7 +147,7 @@ public class Algorithm{
         if (p >= .5){ q = 1-p; }
 
         //return k*Cost.r + (k-1)*Cost.l + k*Cost.f + Cost.m*q + p*Cost.a;
-        return k*Double.parseDouble(props.getProperty("r")) + (k-1.0)*Double.parseDouble(props.getProperty("l")) + k*Double.parseDouble(props.getProperty("f")) + p*Double.parseDouble(props.getProperty("a")) + q*Double.parseDouble(props.getProperty("m"));
+        return k*Double.parseDouble(props.getProperty("r")) + (k-1.0)*Double.parseDouble(props.getProperty("l")) + k*Double.parseDouble(props.getProperty("f")) + p*Double.parseDouble(props.getProperty("a")) + q*Double.parseDouble(props.getProperty("m")) + Double.parseDouble(props.getProperty("t"));
     }
 
     // Helper function to determine if two sets don't intersect
