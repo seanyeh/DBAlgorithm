@@ -150,6 +150,17 @@ public class Algorithm{
         return k*Double.parseDouble(props.getProperty("r")) + (k-1.0)*Double.parseDouble(props.getProperty("l")) + k*Double.parseDouble(props.getProperty("f")) + p*Double.parseDouble(props.getProperty("a")) + q*Double.parseDouble(props.getProperty("m")) + Double.parseDouble(props.getProperty("t"));
     }
 
+    public double getFcost(Record r){
+        int k = r.num;
+        //k*r + (k-1)*l + k*f + t
+        return k*Double.parseDouble(props.getProperty("r")) + 
+            (k-1.0)*Double.parseDouble(props.getProperty("l")) + 
+            k*Double.parseDouble(props.getProperty("f"))+ 
+            Double.parseDouble(props.getProperty("t"));
+
+    }
+
+
     // Helper function to determine if two sets don't intersect
     //  Sets are represetned as ints
     private boolean isDisjoint(int a, int b){
@@ -201,13 +212,19 @@ public class Algorithm{
                 int s2 = A[j].content;
                 if (isDisjoint(s1,s2)){
                     //If they're disjoint, we need to check their c and d-metrics against each other- note we probably should check these conditionals and make sure they're right
+
+                    A[j].cmetric = (A[j].selectivity-1.0)/getFcost(A[j]);
+                    A[i].cmetric = (A[i].selectivity-1.0)/getFcost(A[i]);
                     if (A[j].cmetric <= A[i].cmetric) {
                         // Do nothing
-                    } else if (A[j].selectivity <= 0.5 && A[j].cost < A[i].cost){
+                    } else if (A[j].selectivity <= 0.5 && 
+                            getFcost(A[j]) < getFcost(A[i])){
                         // Do nothing
                     } else {
                         //Calculate combined-plan cost from equation 1
-                        double fcostE = A[j].cost; //fcost(E)
+                        /* double fcostE = A[j].cost; //fcost(E) */
+                        double fcostE = getFcost(A[j]);
+
                         //Calculate m here- the cost of a branch misprediction; read from the configuration file
                         double m = Double.parseDouble(props.getProperty("m"));
                         //Calculate q here, min(1-selectivity of S', selectivity of S')

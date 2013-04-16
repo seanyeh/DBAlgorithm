@@ -1,9 +1,9 @@
 public class Record implements Comparable{
 
-    private int num;
+    // public fields for easy access/modification
+    public int num;
     public double selectivity;
     
-    // isNoBranch, left, and right are public for easy access/modification
     public boolean isNoBranch;
     public double cost;
     public int left, right;
