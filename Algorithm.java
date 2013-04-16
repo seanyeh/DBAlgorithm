@@ -162,7 +162,7 @@ public class Algorithm{
 
 
     // Helper function to determine if two sets don't intersect
-    //  Sets are represetned as ints
+    //  Sets are represented as ints
     private boolean isDisjoint(int a, int b){
         // when a bitwise-OR b == a+B
         return ((a|b) == (a+b));
@@ -178,8 +178,24 @@ public class Algorithm{
         return -1; // shouldn't happen
     }
 
+    //Perform a traversal of the subtrees of A[S] after Step 2.  Currently preorder, though it's easy enough to change to inorder or postorder if we want later.
+    private void traverseSubtrees(Record[] A, int index) {
+        Record r = A[index];
+        if(r.left < 0 && r.right < 0) {
+            System.out.println("LEAF INDEX = " + index + " : " + r);
+        }
+        else {
+            System.out.println("INDEX = " + index + " : " + r);
+            if(r.left >= 0)
+                traverseSubtrees(A, r.left);
+            if(r.right >=0)
+                traverseSubtrees(A, r.right);
+        }
+    }
+
     public void runAll(){
-        currentSels = selectivityArr.get(1);
+        //TODO: foreach index in selectivityArr, set currentSels to selectivityArr.get(index), and run();
+        currentSels = selectivityArr.get(2);
         run();
     }
 
@@ -198,9 +214,9 @@ public class Algorithm{
 
         Arrays.sort(A);
         /* System.out.println("SORTED!"); */
-        /* for (Record r: A){ */
-        /*     System.out.println(r); */
-        /* } */
+         for (Record r: A){ 
+             System.out.println(r); 
+         } 
 
         // Step 2
 
@@ -247,16 +263,30 @@ public class Algorithm{
                             A[unionIndex].cost = combinedCost;
                             A[unionIndex].left = j;
                             A[unionIndex].right = i;
-                            /* System.out.println("Updated:" + A[unionIndex]); */
+                            System.out.println("Updated:" + A[unionIndex]); 
                         }
                     }
                 }
             }
         }
 
-        /* for (Record r: A){ */
-        /*     System.out.println(r); */
-        /* } */
+        //At this point, A[S] should contain the optimal plan.  We can use this to reconstruct the actual order of terms and output appropriate C-code to the terminal.
+        //TODO: Actually implement this
+        Record optimalRecord = A[A.length-1];
+        System.out.println("A[S] = " + optimalRecord);
+        if(optimalRecord.left < 0 && optimalRecord.right < 0) //Optimal plan is the initial no-branch or logical-and plan
+        {
+            
+        }
+        else //Plan has child subtrees, we need to recurse through them until we hit leaf nodes in order to get the term order?
+        {
+            traverseSubtrees(A, A.length-1);
+        }
+
+        //TODO: Comment this out; debug code to display every single record and its location in the record array
+        System.out.println("Printing out all records...");
+        for(int i =0; i< A.length; i++)
+            System.out.println("Index = " + i + ": " + A[i]);
     }
 
     public static void main(String[] args){
