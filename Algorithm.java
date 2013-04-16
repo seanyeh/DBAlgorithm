@@ -151,7 +151,7 @@ public class Algorithm{
     }
 
     public double getFcost(Record r){
-        int k = r.num;
+        double k = (double)r.num;
         //k*r + (k-1)*l + k*f + t
         return k*Double.parseDouble(props.getProperty("r")) + 
             (k-1.0)*Double.parseDouble(props.getProperty("l")) + 
@@ -165,7 +165,7 @@ public class Algorithm{
     //  Sets are represetned as ints
     private boolean isDisjoint(int a, int b){
         // when a bitwise-OR b == a+B
-        return (a^b) == a+b;
+        return ((a|b) == (a+b));
     }
 
     // Return the index of A[] of the item that has content n
