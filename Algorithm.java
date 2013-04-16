@@ -92,7 +92,7 @@ public class Algorithm{
      * currentSels)
      */
     private double getCombinedSelectivity(ArrayList<Integer> indexes){
-        double p = 1;
+        double p = 1.0;
         for (Integer i: indexes){
             double tempP = currentSels[i.intValue()];
             p *= tempP;
@@ -203,7 +203,7 @@ public class Algorithm{
                     //If they're disjoint, we need to check their c and d-metrics against each other- note we probably should check these conditionals and make sure they're right
                     if (A[j].cmetric <= A[i].cmetric) {
                         // Do nothing
-                    } else if (A[j].selectivity <= 0.5 && A[i].cost < A[j].cost){
+                    } else if (A[j].selectivity <= 0.5 && A[j].cost < A[i].cost){
                         // Do nothing
                     } else {
                         //Calculate combined-plan cost from equation 1
@@ -211,9 +211,15 @@ public class Algorithm{
                         //Calculate m here- the cost of a branch misprediction; read from the configuration file
                         double m = Double.parseDouble(props.getProperty("m"));
                         //Calculate q here, min(1-selectivity of S', selectivity of S')
-                        double q = Math.min(1.0-A[j].selectivity, A[j].selectivity);
-                        //Calculate p*C here, where p is selectivity of S', C is the cost of S)
-                        double pc = A[j].selectivity * A[i].cost;
+                        /* double q = Math.min(1.0-A[j].selectivity, A[j].selectivity); */
+                        /* //Calculate p*C here, where p is selectivity of S', C is the cost of S) */
+                        /* double pc = A[j].selectivity * A[i].cost; */
+
+
+
+                        double p = A[j].selectivity * A[i].selectivity;
+                        double q = Math.min(1.0-p, p);
+                        double pc = p * A[i].cost;
                         double combinedCost = fcostE + m*q + pc;
 
                         //Update A[s' union s]
