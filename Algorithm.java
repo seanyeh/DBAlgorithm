@@ -173,7 +173,7 @@ public class Algorithm{
         currentSels = selectivityArr.get(1);
         int k = currentSels.length;
 
-        
+        // Step 1
         //Generate all 2^k - 1 plans
 
         int num = (int)(Math.pow(2,k)) - 1;
@@ -189,7 +189,6 @@ public class Algorithm{
             System.out.println(r);
         }
 
-
         // Step 2
 
         // outer loop: s = s1 = R child
@@ -202,35 +201,33 @@ public class Algorithm{
                     /* System.out.println(s1+" and "+s2+ " disjoint"); */
 
                     //If they're disjoint, we need to check their c and d-metrics against each other- note we probably should check these conditionals and make sure they're right
-                    if(A[j].cmetric > A[i].cmetric) {
-                        if(!(A[j].selectivity <= 0.5 && A[i].cost < A[j].cost)) {
-                            //Calculate combined-plan cost from equation 1
-                            double fcostE = A[j].cost; //fcost(E)
-                            //Calculate m here- the cost of a branch misprediction; read from the configuration file
-                            double m = Double.parseDouble(props.getProperty("m"));
-                            //Calculate q here, min(1-selectivity of S', selectivity of S')
-                            double q = Math.min(1.0-A[j].selectivity, A[j].selectivity);
-                            //Calculate p*C here, where p is selectivity of S', C is the cost of S)
-                            double pc = A[j].selectivity * A[i].cost;
-                            double combinedCost = fcostE + m + q + pc;
+                    if (A[j].cmetric <= A[i].cmetric) {
+                        // Do nothing
+                    } else if (A[j].selectivity <= 0.5 && A[i].cost < A[j].cost){
+                        // Do nothing
+                    } else {
+                        //Calculate combined-plan cost from equation 1
+                        double fcostE = A[j].cost; //fcost(E)
+                        //Calculate m here- the cost of a branch misprediction; read from the configuration file
+                        double m = Double.parseDouble(props.getProperty("m"));
+                        //Calculate q here, min(1-selectivity of S', selectivity of S')
+                        double q = Math.min(1.0-A[j].selectivity, A[j].selectivity);
+                        //Calculate p*C here, where p is selectivity of S', C is the cost of S)
+                        double pc = A[j].selectivity * A[i].cost;
+                        double combinedCost = fcostE + m + q + pc;
 
-                            //Update A[s' union s]
-                            int unionIndex = findIndexWithContent(A,s1+s2);
-                            if (combinedCost < A[unionIndex].cost){
-                                A[unionIndex].cost = combinedCost;
-                                A[unionIndex].left = j;
-                                A[unionIndex].right = i;
-                                /* System.out.println("Updated:" + A[unionIndex]); */
-                            }
-                            
-
+                        //Update A[s' union s]
+                        int unionIndex = findIndexWithContent(A,s1+s2);
+                        if (combinedCost < A[unionIndex].cost){
+                            A[unionIndex].cost = combinedCost;
+                            A[unionIndex].left = j;
+                            A[unionIndex].right = i;
+                            /* System.out.println("Updated:" + A[unionIndex]); */
                         }
                     }
                 }
             }
         }
-
-
     }
 
     public static void main(String[] args){
