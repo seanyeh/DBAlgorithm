@@ -39,7 +39,8 @@ public class Record implements Comparable{
     public String toString(){
         return "Record: n = " + num + " p = " + selectivity +
             " b = " + isNoBranch + " content = " + content +
-            " cost = " + cost + " c-metric = " + cmetric;
+            " cost = " + cost + " c-metric = " + cmetric +
+            " l = " + left + " r = " + right;
     }
 
     // For sorting in increasing order: sorted by num (number of

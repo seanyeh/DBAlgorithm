@@ -62,7 +62,7 @@ public class Algorithm{
             ArrayList<Integer> combination = new ArrayList<Integer>();
             // Convert int to binary representation
             String binary = Integer.toBinaryString(i);
-            System.out.println(binary);
+            /* System.out.println(binary); */
             // Traverse binary string backwards
             for (int j = 0; j<binary.length(); j++){
                 char c = binary.charAt(binary.length()-1-j);
@@ -74,7 +74,7 @@ public class Algorithm{
                     combination.add(new Integer(j));
                 }
 
-                
+
             }
 
             /* System.out.println("DEBUG"); */
@@ -110,8 +110,8 @@ public class Algorithm{
             double costLogicalAnd = getCostLogicalAnd(indexes);
             double costNoBranch = getCostNoBranch(indexes);
 
-            System.out.println("logical: " + costLogicalAnd);
-            System.out.println("nobranch: " + costNoBranch);
+            /* System.out.println("logical: " + costLogicalAnd); */
+            /* System.out.println("nobranch: " + costNoBranch); */
 
             boolean isNoBranch = false;
             double cost = costLogicalAnd;
@@ -125,7 +125,7 @@ public class Algorithm{
             A[i] = new Record(indexes.size(),p,isNoBranch,cost,-1,-1);
 
             A[i].content = i+1;
-            System.out.println(A[i]);
+            /* System.out.println(A[i]); */
         }
     }
 
@@ -167,10 +167,12 @@ public class Algorithm{
         return -1; // shouldn't happen
     }
 
-    public void run(){
-
-        // just get second scenario for now for testing
+    public void runAll(){
         currentSels = selectivityArr.get(1);
+        run();
+    }
+
+    public void run(){
         int k = currentSels.length;
 
         // Step 1
@@ -184,10 +186,10 @@ public class Algorithm{
         initializeRecords(A, combinations);
 
         Arrays.sort(A);
-        System.out.println("SORTED!");
-        for (Record r: A){
-            System.out.println(r);
-        }
+        /* System.out.println("SORTED!"); */
+        /* for (Record r: A){ */
+        /*     System.out.println(r); */
+        /* } */
 
         // Step 2
 
@@ -198,8 +200,6 @@ public class Algorithm{
                 int s1 = A[i].content;
                 int s2 = A[j].content;
                 if (isDisjoint(s1,s2)){
-                    /* System.out.println(s1+" and "+s2+ " disjoint"); */
-
                     //If they're disjoint, we need to check their c and d-metrics against each other- note we probably should check these conditionals and make sure they're right
                     if (A[j].cmetric <= A[i].cmetric) {
                         // Do nothing
@@ -214,11 +214,13 @@ public class Algorithm{
                         double q = Math.min(1.0-A[j].selectivity, A[j].selectivity);
                         //Calculate p*C here, where p is selectivity of S', C is the cost of S)
                         double pc = A[j].selectivity * A[i].cost;
-                        double combinedCost = fcostE + m + q + pc;
+                        double combinedCost = fcostE + m*q + pc;
 
                         //Update A[s' union s]
                         int unionIndex = findIndexWithContent(A,s1+s2);
+                        System.out.println("new cost: "+ combinedCost + " old cost: " + A[unionIndex].cost);
                         if (combinedCost < A[unionIndex].cost){
+                            System.out.println("HALLO");
                             A[unionIndex].cost = combinedCost;
                             A[unionIndex].left = j;
                             A[unionIndex].right = i;
@@ -228,12 +230,16 @@ public class Algorithm{
                 }
             }
         }
+
+        /* for (Record r: A){ */
+        /*     System.out.println(r); */
+        /* } */
     }
 
     public static void main(String[] args){
         try{
             Algorithm a = new Algorithm(args[0], args[1]); //take in query file and config file as command-line arguments as specified in assignment
-            a.run();
+            a.runAll();
 
         } catch (Exception e){
             e.printStackTrace();
