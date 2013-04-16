@@ -213,11 +213,11 @@ public class Algorithm{
                         //Calculate q here, min(1-selectivity of S', selectivity of S')
                         /* double q = Math.min(1.0-A[j].selectivity, A[j].selectivity); */
                         /* //Calculate p*C here, where p is selectivity of S', C is the cost of S) */
-                        /* double pc = A[j].selectivity * A[i].cost; */
+                        double p = A[j].selectivity;
 
 
 
-                        double p = A[j].selectivity * A[i].selectivity;
+                        //double p = A[j].selectivity * A[i].selectivity;
                         double q = Math.min(1.0-p, p);
                         double pc = p * A[i].cost;
                         double combinedCost = fcostE + m*q + pc;
