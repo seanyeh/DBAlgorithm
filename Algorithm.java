@@ -179,7 +179,7 @@ public class Algorithm{
     private void traverseSubtrees(Record[] A, int index, ArrayList<Record> plan) {
         Record r = A[index];
         if(r.left < 0 && r.right < 0) {
-            System.out.println("LEAF INDEX = " + index + " : " + r);
+            /* System.out.println("LEAF INDEX = " + index + " : " + r); */
             plan.add(A[index]);
         }
         else {
@@ -217,10 +217,6 @@ public class Algorithm{
         initializeRecords(A, combinations);
 
         Arrays.sort(A);
-        /* System.out.println("SORTED!"); */
-         for (Record r: A){ 
-             System.out.println(r); 
-         } 
 
         // Step 2
 
@@ -261,13 +257,12 @@ public class Algorithm{
 
                         //Update A[s' union s]
                         int unionIndex = findIndexWithContent(A,s1+s2);
-                        System.out.println("new cost: "+ combinedCost + " old cost: " + A[unionIndex].cost);
+                        /* System.out.println("new cost: "+ combinedCost + " old cost: " + A[unionIndex].cost); */
                         if (combinedCost < A[unionIndex].cost){
-                            System.out.println("HALLO");
                             A[unionIndex].cost = combinedCost;
                             A[unionIndex].left = j;
                             A[unionIndex].right = i;
-                            System.out.println("Updated:" + A[unionIndex]); 
+                            /* System.out.println("Updated:" + A[unionIndex]);  */
                         }
                     }
                 }
@@ -277,7 +272,7 @@ public class Algorithm{
         //At this point, A[S] should contain the optimal plan.  We can use this to reconstruct the actual order of terms and output appropriate C-code to the terminal.
         //TODO: Actually implement this
         Record optimalRecord = A[A.length-1];
-        System.out.println("A[S] = " + optimalRecord);
+        /* System.out.println("A[S] = " + optimalRecord); */
 
 
         // AL to hold plan in order
@@ -286,10 +281,10 @@ public class Algorithm{
 
         traverseSubtrees(A, A.length-1, plan);
 
-        System.out.println("\n\nPLAN");
-        for(Record r:plan){
-            System.out.println(r);
-        }
+        /* System.out.println("\n\nPLAN"); */
+        /* for(Record r:plan){ */
+        /*     System.out.println(r); */
+        /* } */
 
         System.out.println(getCodeFromPlan(plan));
 
