@@ -110,9 +110,6 @@ public class Algorithm{
             double costLogicalAnd = getCostLogicalAnd(indexes);
             double costNoBranch = getCostNoBranch(indexes);
 
-          //   System.out.println("logical: " + costLogicalAnd); 
-          //   System.out.println("nobranch: " + costNoBranch); 
-
             boolean isNoBranch = false;
             double cost = costLogicalAnd;
             if (costNoBranch < costLogicalAnd){
@@ -133,7 +130,7 @@ public class Algorithm{
     public double getCostNoBranch(ArrayList<Integer> indexes){
         double k = (double)indexes.size();
 
-        //return k*Cost.r + (k-1)*Cost.l + k*Cost.f + Cost.a;
+        //k*Cost.r + (k-1)*Cost.l + k*Cost.f + Cost.a;
         return k*Double.parseDouble(props.getProperty("r")) + (k-1.0)*Double.parseDouble(props.getProperty("l")) + k*Double.parseDouble(props.getProperty("f")) + Double.parseDouble(props.getProperty("a"));
     }
 
@@ -179,23 +176,24 @@ public class Algorithm{
     }
 
     //Perform a traversal of the subtrees of A[S] after Step 2.  Currently preorder, though it's easy enough to change to inorder or postorder if we want later.
-    private void traverseSubtrees(Record[] A, int index) {
+    private void traverseSubtrees(Record[] A, int index, ArrayList<Record> plan) {
         Record r = A[index];
         if(r.left < 0 && r.right < 0) {
             System.out.println("LEAF INDEX = " + index + " : " + r);
+            plan.add(A[index]);
         }
         else {
-            System.out.println("INDEX = " + index + " : " + r);
+            /* System.out.println("INDEX = " + index + " : " + r); */
             if(r.left >= 0)
-                traverseSubtrees(A, r.left);
+                traverseSubtrees(A, r.left, plan);
             if(r.right >=0)
-                traverseSubtrees(A, r.right);
+                traverseSubtrees(A, r.right, plan);
         }
     }
 
     public void runAll(){
         //TODO: foreach index in selectivityArr, set currentSels to selectivityArr.get(index), and run();
-        currentSels = selectivityArr.get(2);
+        currentSels = selectivityArr.get(1);
         run();
     }
 
@@ -274,19 +272,38 @@ public class Algorithm{
         //TODO: Actually implement this
         Record optimalRecord = A[A.length-1];
         System.out.println("A[S] = " + optimalRecord);
+
+
+        // AL to hold plan in order
+        ArrayList<Record> plan = new ArrayList<Record>();
+
+
+        traverseSubtrees(A, A.length-1, plan);
+
+        System.out.println("\n\nPLAN");
+        for(Record r:plan){
+            System.out.println(r);
+        }
+
         if(optimalRecord.left < 0 && optimalRecord.right < 0) //Optimal plan is the initial no-branch or logical-and plan
         {
             
         }
         else //Plan has child subtrees, we need to recurse through them until we hit leaf nodes in order to get the term order?
         {
-            traverseSubtrees(A, A.length-1);
+
+            /* traverseSubtrees(A, A.length-1, plan); */
+
+            /* System.out.println("PLAN"); */
+            /* for(Record r:plan){ */
+            /*     System.out.println(r); */
+            /* } */
         }
 
-        //TODO: Comment this out; debug code to display every single record and its location in the record array
-        System.out.println("Printing out all records...");
-        for(int i =0; i< A.length; i++)
-            System.out.println("Index = " + i + ": " + A[i]);
+        /* //TODO: Comment this out; debug code to display every single record and its location in the record array */
+        /* System.out.println("Printing out all records..."); */
+        /* for(int i =0; i< A.length; i++) */
+        /*     System.out.println("Index = " + i + ": " + A[i]); */
     }
 
     public static void main(String[] args){
