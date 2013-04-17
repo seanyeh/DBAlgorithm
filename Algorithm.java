@@ -290,6 +290,7 @@ public class Algorithm{
         /* } */
 
         System.out.println(getCodeFromPlan(plan));
+        System.out.println("Cost: " + optimalRecord.cost);
 
         
         /* if(optimalRecord.left < 0 && optimalRecord.right < 0) //Optimal plan is the initial no-branch or logical-and plan */
@@ -343,16 +344,22 @@ public class Algorithm{
                 andCode += "(" + s + ")";
             }
         }
-        /* return "andCode: " + andCode + "\nnoBranchCode: " + noBranchCode; */
         String conditional = "if(" + andCode + "){\n";
 
         String inner = "\tanswer[j] = i;\n\tj += (" + noBranchCode + ");";
+
         // If there is noBranchCode, then use the default answer[j++] = i
         if (noBranchCode.length() == 0){
             inner = "answer[j++] = i;";
         }
 
-        return conditional + inner + "\n}";
+        if (andCode.length() == 0){
+            // If everything is noBranch, don't need conditional
+            // Also, get rid of tabs
+            return inner.replace("\t","");
+        } else{
+            return conditional + inner + "\n}";
+        }
             
     }
 
