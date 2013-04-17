@@ -265,13 +265,18 @@ public class Algorithm{
         Record optimalRecord = A[A.length-1];
         /* System.out.println("A[S] = " + optimalRecord); */
 
-
         // AL to hold plan in order
         ArrayList<Record> plan = new ArrayList<Record>();
 
 
         traverseSubtrees(A, A.length-1, plan);
 
+        //Begin printing appropriate output to the terminal
+        String sels = "";
+        for (double d: currentSels){
+            sels += d + " ";
+        }
+        System.out.println(sels);
         System.out.println(getCodeFromPlan(plan));
         System.out.println("Cost: " + optimalRecord.cost);
     }
