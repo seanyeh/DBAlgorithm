@@ -184,16 +184,22 @@ public class Algorithm{
         }
         else {
             /* System.out.println("INDEX = " + index + " : " + r); */
-            if(r.left >= 0)
+            if(r.left >= 0){
+                // According to the algorithm, the left child is an &-term,
+                // not a noBranch
+                A[r.left].isNoBranch = false;
+
                 traverseSubtrees(A, r.left, plan);
-            if(r.right >=0)
+            }
+            if(r.right >=0){
                 traverseSubtrees(A, r.right, plan);
+            }
         }
     }
 
     public void runAll(){
         //TODO: foreach index in selectivityArr, set currentSels to selectivityArr.get(index), and run();
-        currentSels = selectivityArr.get(1);
+        currentSels = selectivityArr.get(2);
         run();
     }
 
@@ -285,20 +291,14 @@ public class Algorithm{
             System.out.println(r);
         }
 
-        if(optimalRecord.left < 0 && optimalRecord.right < 0) //Optimal plan is the initial no-branch or logical-and plan
-        {
-            
-        }
-        else //Plan has child subtrees, we need to recurse through them until we hit leaf nodes in order to get the term order?
-        {
+        System.out.println(getCodeFromPlan(plan));
 
-            /* traverseSubtrees(A, A.length-1, plan); */
-
-            /* System.out.println("PLAN"); */
-            /* for(Record r:plan){ */
-            /*     System.out.println(r); */
-            /* } */
-        }
+        
+        /* if(optimalRecord.left < 0 && optimalRecord.right < 0) //Optimal plan is the initial no-branch or logical-and plan */
+        /* { */
+        /*      */
+        /* } */
+        /* else //Plan has child subtrees, we need to recurse through them until we hit leaf nodes in order to get the term order? */
 
         /* //TODO: Comment this out; debug code to display every single record and its location in the record array */
         /* System.out.println("Printing out all records..."); */
@@ -315,6 +315,60 @@ public class Algorithm{
             e.printStackTrace();
         }
 
+    }
+    
+    // Given int n, return tn[on[i]]
+    private String getArrayString(int n){
+        return "t" + n + "[o" + n + "[i]]";
+    }
+
+    public String getCodeFromPlan(ArrayList<Record> plan){
+        String andCode = "";
+        String noBranchCode = "";
+        for (Record r: plan){
+            String s = "";
+            ArrayList<Integer> indexes = getSelIndexesFromContent(r.content);
+            for (int i=0; i<indexes.size(); i++){
+                int selIndex = indexes.get(i).intValue() + 1;
+
+                // If not first item, add an &
+                if (s.length() > 0){ s += " & ";}
+
+                s += getArrayString(selIndex);
+            }
+
+            if (r.isNoBranch){
+                if (noBranchCode.length() > 0){ noBranchCode += " & ";}
+                noBranchCode += s;
+            } else{
+                if (andCode.length() > 0){ andCode += " && ";}
+                andCode += "(" + s + ")";
+            }
+        }
+        /* return "andCode: " + andCode + "\nnoBranchCode: " + noBranchCode; */
+        String conditional = "if(" + andCode + "){\n";
+
+        String inner = "\tanswer[j] = i;\n\tj += (" + noBranchCode + ");";
+        // If there is noBranchCode, then use the default answer[j++] = i
+        if (noBranchCode.length() == 0){
+            inner = "answer[j++] = i;";
+        }
+
+        return conditional + inner + "\n}";
+            
+    }
+
+    // Helper method, get selectivity indexes from a content, 
+    // which is an int (which is just a bitmap)
+    private ArrayList<Integer> getSelIndexesFromContent(int content){
+        ArrayList<Integer> indexes = new ArrayList<Integer>();
+        String binary = Integer.toBinaryString(content);
+        for (int i=0;i<binary.length();i++){
+            if (binary.charAt(binary.length()-1-i) == '1'){
+                indexes.add(new Integer(i));
+            }
+        }
+        return indexes;
     }
 
 }
