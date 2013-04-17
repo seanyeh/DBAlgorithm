@@ -1,3 +1,9 @@
+/**
+Sean Yeh, Michael Eng
+COMS 4112 Project 2
+Algorithm.java- the main class where the algorithm occurs.  Reads in the query and configuration info files, and runs the algorithm on each line of selectivities from the query file, outputting an optimal plan in C code for each line.
+**/
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -5,12 +11,9 @@ import java.util.Scanner;
 import java.util.Properties;
 
 public class Algorithm{
-
     private ArrayList<Double[]> selectivityArr;
-
-    private Double[] currentSels;
-
-    private Properties props;
+    private Double[] currentSels; //Stores working set of selectivities from query file- is updated each time we run the algorithm on a new line of the query file
+    private Properties props; //Stores values from configuration input file
 
     // Read in the query file and store in selectivityArr
     private ArrayList<Double[]> parseQueryFile(String queryFile)
@@ -67,21 +70,9 @@ public class Algorithm{
             for (int j = 0; j<binary.length(); j++){
                 char c = binary.charAt(binary.length()-1-j);
                 if (c=='1'){
-                    /* Double d = Double.parseDouble(currentSels[j]); */
-
-
-                    // lets try j (index) instead of actual double
                     combination.add(new Integer(j));
                 }
-
-
             }
-
-            /* System.out.println("DEBUG"); */
-            /* for (Integer d2: combination){ */
-            /*     System.out.println(d2); */
-            /* } */
-
             result.add(combination);
         }
         return result;
@@ -100,6 +91,7 @@ public class Algorithm{
         return p;
     }
 
+    //Internal method for step 1 of the algorithm when we generate all 2^k - 1 plans
     public void initializeRecords(Record[] A, 
             ArrayList<ArrayList<Integer>> combinations)
     {
@@ -126,7 +118,7 @@ public class Algorithm{
         }
     }
 
-    // rename and put somewhere else later
+    // Calculates the cost of a no-branch based on example 4.4
     public double getCostNoBranch(ArrayList<Integer> indexes){
         double k = (double)indexes.size();
 
@@ -134,6 +126,7 @@ public class Algorithm{
         return k*Double.parseDouble(props.getProperty("r")) + (k-1.0)*Double.parseDouble(props.getProperty("l")) + k*Double.parseDouble(props.getProperty("f")) + Double.parseDouble(props.getProperty("a"));
     }
 
+    //Calculates the cost of a logical-And based on example 4.5
     public double getCostLogicalAnd(ArrayList<Integer> indexes){
         double k = (double)indexes.size();
 
@@ -147,6 +140,7 @@ public class Algorithm{
         return k*Double.parseDouble(props.getProperty("r")) + (k-1.0)*Double.parseDouble(props.getProperty("l")) + k*Double.parseDouble(props.getProperty("f")) + p*Double.parseDouble(props.getProperty("a")) + q*Double.parseDouble(props.getProperty("m")) + Double.parseDouble(props.getProperty("t"));
     }
 
+    //Calculates the fixed cost associated with a given record based on definition 4.7
     public double getFcost(Record r){
         double k = (double)r.num;
         //k*r + (k-1)*l + k*f + t
@@ -154,7 +148,6 @@ public class Algorithm{
             (k-1.0)*Double.parseDouble(props.getProperty("l")) + 
             k*Double.parseDouble(props.getProperty("f"))+ 
             Double.parseDouble(props.getProperty("t"));
-
     }
 
 
@@ -175,7 +168,8 @@ public class Algorithm{
         return -1; // shouldn't happen
     }
 
-    //Perform a traversal of the subtrees of A[S] after Step 2.  Currently preorder, though it's easy enough to change to inorder or postorder if we want later.
+    //Perform a traversal of the subtrees of A[S] after Step 2.  Used to help reconstruct the plan associated with A[S] after running the algorithm.
+    //In practice- start from A[S], recurse through left subtree, then recurse through right subtree.  Along the way, if you hit a leaf node, add it to the AL that will later be used to construct output code for the plan.  When recursing to a node's left child, update that child's isNoBranch value to false per the hint in p2_directions.pdf.
     private void traverseSubtrees(Record[] A, int index, ArrayList<Record> plan) {
         Record r = A[index];
         if(r.left < 0 && r.right < 0) {
@@ -188,7 +182,6 @@ public class Algorithm{
                 // According to the algorithm, the left child is an &-term,
                 // not a noBranch
                 A[r.left].isNoBranch = false;
-
                 traverseSubtrees(A, r.left, plan);
             }
             if(r.right >=0){
@@ -198,7 +191,7 @@ public class Algorithm{
     }
 
     public void runAll(){
-        //TODO: foreach index in selectivityArr, set currentSels to selectivityArr.get(index), and run();
+        //Loops through each line in the query file and runs the algorithm on it
         for (int i=0; i<selectivityArr.size(); i++){
             System.out.println("===================");
             currentSels = selectivityArr.get(i);
@@ -241,24 +234,20 @@ public class Algorithm{
                         // Do nothing
                     } else {
                         //Calculate combined-plan cost from equation 1
-                        /* double fcostE = A[j].cost; //fcost(E) */
-                        double fcostE = getFcost(A[j]);
 
+                        //fCost(E) = fCost(S')
+                        double fcostE = getFcost(A[j]);
                         //Calculate m here- the cost of a branch misprediction; read from the configuration file
                         double m = Double.parseDouble(props.getProperty("m"));
-                        //Calculate q here, min(1-selectivity of S', selectivity of S')
-                        /* double q = Math.min(1.0-A[j].selectivity, A[j].selectivity); */
-                        /* //Calculate p*C here, where p is selectivity of S', C is the cost of S) */
+                        //p is the selectivity of S'
                         double p = A[j].selectivity;
-
-
-
-                        //double p = A[j].selectivity * A[i].selectivity;
+                        //Calculate q here, min(1-selectivity of S', selectivity of S')
                         double q = Math.min(1.0-p, p);
+                        //Calculate p*C here, where p is selectivity of S', C is the cost of S)
                         double pc = p * A[i].cost;
                         double combinedCost = fcostE + m*q + pc;
 
-                        //Update A[s' union s]
+                        //Update A[s' union s] if the combined plan's cost is lower than what's stored there already
                         int unionIndex = findIndexWithContent(A,s1+s2);
                         /* System.out.println("new cost: "+ combinedCost + " old cost: " + A[unionIndex].cost); */
                         if (combinedCost < A[unionIndex].cost){
@@ -273,7 +262,6 @@ public class Algorithm{
         }
 
         //At this point, A[S] should contain the optimal plan.  We can use this to reconstruct the actual order of terms and output appropriate C-code to the terminal.
-        //TODO: Actually implement this
         Record optimalRecord = A[A.length-1];
         /* System.out.println("A[S] = " + optimalRecord); */
 
@@ -284,25 +272,8 @@ public class Algorithm{
 
         traverseSubtrees(A, A.length-1, plan);
 
-        /* System.out.println("\n\nPLAN"); */
-        /* for(Record r:plan){ */
-        /*     System.out.println(r); */
-        /* } */
-
         System.out.println(getCodeFromPlan(plan));
         System.out.println("Cost: " + optimalRecord.cost);
-
-        
-        /* if(optimalRecord.left < 0 && optimalRecord.right < 0) //Optimal plan is the initial no-branch or logical-and plan */
-        /* { */
-        /*      */
-        /* } */
-        /* else //Plan has child subtrees, we need to recurse through them until we hit leaf nodes in order to get the term order? */
-
-        /* //TODO: Comment this out; debug code to display every single record and its location in the record array */
-        /* System.out.println("Printing out all records..."); */
-        /* for(int i =0; i< A.length; i++) */
-        /*     System.out.println("Index = " + i + ": " + A[i]); */
     }
 
     public static void main(String[] args){
@@ -316,11 +287,12 @@ public class Algorithm{
 
     }
     
-    // Given int n, return tn[on[i]]
+    // Given int n, return tn[on[i]]; used as a helper method in the C code generation part of the application
     private String getArrayString(int n){
         return "t" + n + "[o" + n + "[i]]";
     }
 
+    //Given the list of leaf nodes and their updated branching information, construct the output configuration code to be printed to the terminal
     public String getCodeFromPlan(ArrayList<Record> plan){
         String andCode = "";
         String noBranchCode = "";
@@ -335,7 +307,7 @@ public class Algorithm{
 
                 s += getArrayString(selIndex);
             }
-
+            //If nobranch term, use &; otherwise add the term to the if-statement via &&
             if (r.isNoBranch){
                 if (noBranchCode.length() > 0){ noBranchCode += " & ";}
                 noBranchCode += s;

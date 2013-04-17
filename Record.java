@@ -1,3 +1,9 @@
+/**
+Sean Yeh, Michael Eng
+COMS 4112 Project 2
+Record.java- Data class for an individual plan and its pertinent characteristics
+**/
+
 public class Record implements Comparable{
 
     // public fields for easy access/modification
@@ -7,20 +13,13 @@ public class Record implements Comparable{
     public boolean isNoBranch;
     public double cost;
     public int left, right;
-
     // An int that, when converted to binary and read backwards, acts as a
     // bitmap that shows which selectivities are used.
     public int content;
-
     // The c-metric needs to be calculated and stored when the Record is constructed, as we can calculate it from cost and selectivity alone.
     // d-metric is just the cost, so we can leave it at that without adding anything new internally.
     public double cmetric;
 
-    // L and R should not be Records...figure this out later
-    /* public Record(int n, double p, boolean b, double c, Record l, Record r){ */
-
-    // I think L and R are indexes to the left/right children in the A array?
-    //  and this record should be the combined plan of L && R...?
     public Record(int n, double p, boolean b, double c, int l, int r){
         num = n;
         selectivity = p;
