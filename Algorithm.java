@@ -199,8 +199,11 @@ public class Algorithm{
 
     public void runAll(){
         //TODO: foreach index in selectivityArr, set currentSels to selectivityArr.get(index), and run();
-        currentSels = selectivityArr.get(2);
-        run();
+        for (int i=0; i<selectivityArr.size(); i++){
+            System.out.println("===================");
+            currentSels = selectivityArr.get(i);
+            run();
+        }
     }
 
     public void run(){
