@@ -289,6 +289,11 @@ public class Algorithm{
         /*     System.out.println(r); */
         /* } */
 
+        String sels = "";
+        for (double d: currentSels){
+            sels += d + " ";
+        }
+        System.out.println(sels);
         System.out.println(getCodeFromPlan(plan));
         System.out.println("Cost: " + optimalRecord.cost);
 
